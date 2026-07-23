@@ -1,0 +1,1 @@
+window.READ_LIKE_2000_SOURCES = [];

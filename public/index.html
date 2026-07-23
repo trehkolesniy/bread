@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#ffffff">
+    <title>bread — blog reader</title>
+    <link rel="icon" href="/bread-icon.png" type="image/png">
+    <link rel="stylesheet" href="/styles.css">
+  </head>
+  <body>
+    <div class="scroll-progress feed-scroll-progress" id="feedScrollProgress" role="progressbar" aria-label="Прогресс ленты" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+      <span></span>
+    </div>
+
+    <div class="app-shell">
+      <main class="timeline">
+        <header class="topbar">
+          <p class="view-kicker" id="viewTitle">Лента</p>
+          <h1>bread</h1>
+          <p id="feedMeta">Публикации из добавленных блогов</p>
+        </header>
+
+        <section class="status-line" id="statusLine" aria-live="polite"></section>
+        <section class="feed-list" id="feedList"></section>
+        <button class="load-more-button" id="loadMoreButton" type="button" hidden>Показать ещё</button>
+      </main>
+
+      <aside class="sidebar" id="sidePanel" aria-label="Библиотека" aria-hidden="true">
+        <header class="panel-header">
+          <div>
+            <strong>Библиотека</strong>
+            <span>личная лента</span>
+          </div>
+          <button class="icon-button" id="closePanelButton" type="button" title="Закрыть библиотеку" aria-label="Закрыть библиотеку">
+            <i data-lucide="x" aria-hidden="true"></i>
+          </button>
+        </header>
+
+        <div class="panel-content">
+          <label class="search-field">
+            <span>Поиск</span>
+            <span class="search-input-wrap">
+              <i data-lucide="search" aria-hidden="true"></i>
+              <input id="searchInput" name="query" autocomplete="off" placeholder="Тема, автор, блог">
+            </span>
+          </label>
+
+          <div class="view-switch" aria-label="Фильтр ленты">
+            <button class="view-button is-active" type="button" data-view="all">Все</button>
+            <button class="view-button" type="button" data-view="new">Новые</button>
+            <button class="view-button" type="button" data-view="unread">Непрочитанные</button>
+            <button class="view-button" type="button" data-view="saved">Сохранённые</button>
+          </div>
+
+          <details class="sidebar-panel">
+            <summary>
+              <span>Источники</span>
+              <span id="sourceCount" aria-label="Количество источников">89</span>
+            </summary>
+            <div class="source-list" id="sourceList"></div>
+          </details>
+
+          <details class="sidebar-panel">
+            <summary>
+              <span>Добавить блог</span>
+            </summary>
+            <form class="source-form" id="sourceForm">
+              <label>
+                <span>Название</span>
+                <input id="sourceTitle" name="title" autocomplete="off" placeholder="Название блога">
+              </label>
+              <label>
+                <span>RSS / Atom</span>
+                <input id="sourceUrl" name="url" type="url" required placeholder="https://example.com/feed.xml">
+              </label>
+              <button type="submit">Добавить</button>
+            </form>
+          </details>
+        </div>
+      </aside>
+
+      <aside class="article-reader" id="articleReader" aria-label="Статья" aria-hidden="true">
+        <header class="article-reader-header">
+          <button class="icon-button" id="closeArticleButton" type="button" title="Закрыть статью" aria-label="Закрыть статью">
+            <i data-lucide="x" aria-hidden="true"></i>
+          </button>
+          <div class="article-reader-context">
+            <strong id="articleSource"></strong>
+            <span id="articlePublishedAt"></span>
+          </div>
+          <button class="article-language-button" id="articleLanguageButton" type="button" hidden>Оригинал</button>
+        </header>
+
+        <div class="scroll-progress article-scroll-progress" id="articleScrollProgress" role="progressbar" aria-label="Прогресс статьи" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+          <span></span>
+        </div>
+
+        <div class="article-reader-scroll" id="articleReaderScroll">
+          <article class="article-document">
+            <p class="article-translation-status" id="articleTranslationStatus"></p>
+            <h2 id="articleTitle"></h2>
+            <div class="article-copy" id="articleCopy"></div>
+            <a class="article-original-link" id="articleOriginalLink" target="_blank" rel="noreferrer">
+              Открыть оригинал
+              <i data-lucide="external-link" aria-hidden="true"></i>
+            </a>
+          </article>
+        </div>
+      </aside>
+
+      <footer class="command-bar" aria-label="Управление читалкой">
+        <div class="command-group typography-controls">
+          <button id="fontSizeButton" type="button" title="Размер текста">17px</button>
+          <span aria-hidden="true">•</span>
+          <button id="fontSansButton" class="is-active" type="button">Lato</button>
+          <span aria-hidden="true">•</span>
+          <button id="fontSerifButton" type="button">Serif</button>
+        </div>
+
+        <div class="command-group reader-actions">
+          <button id="markReadButton" type="button">Всё прочитано</button>
+          <span aria-hidden="true">•</span>
+          <button id="topRefreshButton" type="button" data-refresh title="Обновить ленту" aria-label="Обновить ленту">
+            <i data-lucide="refresh-cw" aria-hidden="true"></i>
+            <span data-refresh-label class="visually-hidden">Обновить</span>
+          </button>
+          <span aria-hidden="true">•</span>
+          <button id="fullscreenButton" type="button" title="Полноэкранный режим" aria-label="Полноэкранный режим">
+            <i data-lucide="maximize" aria-hidden="true"></i>
+          </button>
+          <span aria-hidden="true">•</span>
+          <button id="themeButton" type="button" title="Тёмная тема" aria-label="Тёмная тема">
+            <i data-lucide="moon" aria-hidden="true"></i>
+          </button>
+          <span aria-hidden="true">•</span>
+          <button id="panelToggleButton" type="button" aria-expanded="false" aria-controls="sidePanel">
+            Библиотека <span aria-hidden="true">↗</span>
+          </button>
+        </div>
+      </footer>
+    </div>
+
+    <template id="sourceTemplate">
+      <article class="source-item">
+        <div>
+          <strong></strong>
+          <span></span>
+        </div>
+      </article>
+    </template>
+
+    <template id="postTemplate">
+      <article class="post">
+        <div class="post-body">
+          <div class="post-meta">
+            <strong></strong>
+            <span></span>
+            <time></time>
+            <span class="new-badge">новое</span>
+          </div>
+          <a class="post-title" target="_blank" rel="noreferrer"></a>
+          <p></p>
+          <div class="post-actions">
+            <button class="post-tool" type="button" data-action="read" title="Отметить прочитанным" aria-label="Отметить прочитанным">
+              <i data-lucide="check" aria-hidden="true"></i>
+            </button>
+            <button class="post-tool" type="button" data-action="save" title="Сохранить" aria-label="Сохранить">
+              <i data-lucide="star" aria-hidden="true"></i>
+            </button>
+          </div>
+        </div>
+      </article>
+    </template>
+
+    <script src="/sources.js"></script>
+    <script src="/translation-cache.js"></script>
+    <script src="/vendor/lucide.min.js"></script>
+    <script src="/app.js" type="module"></script>
+  </body>
+</html>
